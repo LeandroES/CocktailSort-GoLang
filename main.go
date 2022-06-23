@@ -1,20 +1,26 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+	_ "log"
+	"os"
+	"time"
+)
 
-func CocktailSort(a [9]int, n int) {
+func CocktailSort(a []int) []int {
+	n := len(a)
 	swapped := true
 	start := 0
 	end := n - 1
 	temp := 0
-
 	for swapped == true {
 		// restablecer Flag de swap al entrar en el bucle,
 		//porque podría ser cierto desde una iteración anterior.
 		swapped := false
 		// bucle de izquierda a derecha igual que la ordenación de burbujas
 		for i := start; i < end; i++ {
-			if (a[i] > a[i+1]) {
+			if a[i] > a[i+1] {
 				temp = a[i]
 				a[i] = a[i+1]
 				a[i+1] = temp
@@ -22,7 +28,7 @@ func CocktailSort(a [9]int, n int) {
 			}
 		}
 		//si no se mueve nada, entonces el array se ordena.
-		if (!swapped) {
+		if !swapped {
 			break
 		}
 		// de lo contrario, restablece la bandera intercambiada para
@@ -34,7 +40,7 @@ func CocktailSort(a [9]int, n int) {
 		// de derecha a izquierda, haciendo la misma comparación que
 		// en la etapa anterior
 		for i := end - 1; i >= start; i-- {
-			if (a[i] > a[i+1]) {
+			if a[i] > a[i+1] {
 				temp = a[i]
 				a[i] = a[i+1]
 				a[i+1] = temp
@@ -43,15 +49,30 @@ func CocktailSort(a [9]int, n int) {
 		}
 		start++
 	}
-
-	for i := 0; i < n; i++ {
-		//printf("%d ", a[i])
-		fmt.Println(a[i])
-	}
+	return a
 }
-
 func main() {
-	a := [9]int{1522425, 10, 5, 6, 165, 1, 84, 56, 1523}
-	n := len(a)
-	CocktailSort(a, n)
+	file, err := os.Open("50000.txt")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	var perline int
+	var nums []int
+	for {
+		_, err := fmt.Fscanf(file, "%d\n", &perline)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		nums = append(nums, perline)
+	}
+	inicio := time.Now()
+	CocktailSort(nums)
+	duracion := time.Since(inicio)
+	fmt.Println("Tiempo en Microsegundos: ", duracion.Microseconds())
+
 }
